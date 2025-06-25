@@ -1,60 +1,82 @@
+# game.py
 import pygame
 import sys
+from pet import Pet  # Import the Pet class
 
-# Initialize pygame
+# 1. Initialize pygame
 pygame.init()
 
-# Set up the game window
+# 2. Set up the game window
 screen = pygame.display.set_mode((800, 600))  # 800x600 window
 pygame.display.set_caption("Pet Simulator")
 
-class Pet:
-    def __init__(self):
-        self.hunger = 50
-        self.happiness = 50
-        self.energy = 50
-        self.cleanliness = 50
-        self.is_alive = True
-
-    def feed(self):
-        self.hunger = min(self.hunger + 10, 100)  # Feeding increases hunger by 10, max 100
-
-    def play(self):
-        self.happiness = min(self.happiness + 10, 100)  # Playing increases happiness
-
-    def clean(self):
-        self.cleanliness = min(self.cleanliness + 10, 100)  # Cleaning increases cleanliness
-
-    def sleep(self):
-        self.energy = min(self.energy + 10, 100)  # Sleeping increases energy
-
-    def update(self):
-        # Check if pet is alive based on stats
-        if self.hunger <= 0 or self.happiness <= 0 or self.energy <= 0 or self.cleanliness <= 0:
-            self.is_alive = False
-
-# Set up clock to control frame rate
+# 3. Set up the clock to control frame rate
 clock = pygame.time.Clock()
 
-# Game loop
+# 4. Create a pet object
+pet = Pet()
+
+# 5. Game loop
 running = True
 while running:
-    # Handle events (key presses, etc.)
+    # 6. Handle events (key presses, etc.)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Fill the screen with a color (white in this case)
+    # 7. Fill the screen with a color (white in this case)
     screen.fill((255, 255, 255))  # RGB color for white
 
-    # Game elements here (text, images, buttons)
+    # 8. Display pet stats on the screen
+    font = pygame.font.Font(None, 36)
 
-    # Update the display
+    hunger_text = font.render(f"Hunger: {pet.hunger}", True, (0, 0, 0))
+    happiness_text = font.render(f"Happiness: {pet.happiness}", True, (0, 0, 0))
+    energy_text = font.render(f"Energy: {pet.energy}", True, (0, 0, 0))
+    cleanliness_text = font.render(f"Cleanliness: {pet.cleanliness}", True, (0, 0, 0))
+
+    # Display text on the screen
+    screen.blit(hunger_text, (10, 10))
+    screen.blit(happiness_text, (10, 50))
+    screen.blit(energy_text, (10, 90))
+    screen.blit(cleanliness_text, (10, 130))
+
+    # 9. Display "Game Over" message if pet is dead
+    if not pet.is_alive:
+        game_over_text = font.render("Game Over!", True, (255, 0, 0))
+        screen.blit(game_over_text, (350, 250))
+
+    # 10. Create Rects for interaction buttons (feed, play, clean)
+    feed_button = pygame.Rect(100, 500, 100, 50)
+    play_button = pygame.Rect(300, 500, 100, 50)
+
+    # Draw buttons
+    pygame.draw.rect(screen, (0, 255, 0), feed_button)  # Feed button (green)
+    pygame.draw.rect(screen, (0, 0, 255), play_button)  # Play button (blue)
+
+    # Add text to the buttons
+    feed_text = font.render("Feed", True, (0, 0, 0))
+    play_text = font.render("Play", True, (0, 0, 0))
+    screen.blit(feed_text, (120, 510))
+    screen.blit(play_text, (320, 510))
+
+    # 11. Handle button clicks
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        x, y = pygame.mouse.get_pos()
+        if feed_button.collidepoint(x, y):
+            pet.feed()
+        elif play_button.collidepoint(x, y):
+            pet.play()
+
+    # 12. Update pet stats over time
+    pet.update()
+
+    # 13. Update the display
     pygame.display.flip()
 
-    # Set the frame rate (60 FPS)
+    # 14. Set the frame rate (60 FPS)
     clock.tick(60)
 
-# Quit pygame when the game loop ends
+# 15. Quit pygame when the game loop ends
 pygame.quit()
 sys.exit()
